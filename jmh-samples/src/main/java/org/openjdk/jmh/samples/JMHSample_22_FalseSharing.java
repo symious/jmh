@@ -78,22 +78,22 @@ public class JMHSample_22_FalseSharing {
      * penalties.
      */
 
-    @State(Scope.Group)
+    @State(Scope.Thread)
     public static class StateBaseline {
         int readOnly;
         int writeOnly;
     }
 
-    @Benchmark
-    @Group("baseline")
-    public int reader(StateBaseline s) {
-        return s.readOnly;
-    }
+//    @Benchmark
+//    @Group("baseline")
+//    public int reader(StateBaseline s) {
+//        return s.readOnly;
+//    }
 
     @Benchmark
-    @Group("baseline")
-    public void writer(StateBaseline s) {
-        s.writeOnly++;
+//    @Group("baseline")
+    public int writer(StateBaseline s) {
+        return s.writeOnly++;
     }
 
     /*
@@ -104,27 +104,27 @@ public class JMHSample_22_FalseSharing {
      * field order, even of the same type.
      */
 
-    @State(Scope.Group)
-    public static class StatePadded {
-        int readOnly;
-        int p01, p02, p03, p04, p05, p06, p07, p08;
-        int p11, p12, p13, p14, p15, p16, p17, p18;
-        int writeOnly;
-        int q01, q02, q03, q04, q05, q06, q07, q08;
-        int q11, q12, q13, q14, q15, q16, q17, q18;
-    }
-
-    @Benchmark
-    @Group("padded")
-    public int reader(StatePadded s) {
-        return s.readOnly;
-    }
-
-    @Benchmark
-    @Group("padded")
-    public void writer(StatePadded s) {
-        s.writeOnly++;
-    }
+//    @State(Scope.Group)
+//    public static class StatePadded {
+//        int readOnly;
+//        int p01, p02, p03, p04, p05, p06, p07, p08;
+//        int p11, p12, p13, p14, p15, p16, p17, p18;
+//        int writeOnly;
+//        int q01, q02, q03, q04, q05, q06, q07, q08;
+//        int q11, q12, q13, q14, q15, q16, q17, q18;
+//    }
+//
+//    @Benchmark
+//    @Group("padded")
+//    public int reader(StatePadded s) {
+//        return s.readOnly;
+//    }
+//
+//    @Benchmark
+//    @Group("padded")
+//    public void writer(StatePadded s) {
+//        s.writeOnly++;
+//    }
 
     /*
      * APPROACH 2: CLASS HIERARCHY TRICK
@@ -141,51 +141,51 @@ public class JMHSample_22_FalseSharing {
      * padding fields pulled into in their superclass gaps.
      */
 
-    public static class StateHierarchy_1 {
-        int readOnly;
-    }
-
-    public static class StateHierarchy_2 extends StateHierarchy_1 {
-        byte p01, p02, p03, p04, p05, p06, p07, p08;
-        byte p11, p12, p13, p14, p15, p16, p17, p18;
-        byte p21, p22, p23, p24, p25, p26, p27, p28;
-        byte p31, p32, p33, p34, p35, p36, p37, p38;
-        byte p41, p42, p43, p44, p45, p46, p47, p48;
-        byte p51, p52, p53, p54, p55, p56, p57, p58;
-        byte p61, p62, p63, p64, p65, p66, p67, p68;
-        byte p71, p72, p73, p74, p75, p76, p77, p78;
-    }
-
-    public static class StateHierarchy_3 extends StateHierarchy_2 {
-        int writeOnly;
-    }
-
-    public static class StateHierarchy_4 extends StateHierarchy_3 {
-        byte q01, q02, q03, q04, q05, q06, q07, q08;
-        byte q11, q12, q13, q14, q15, q16, q17, q18;
-        byte q21, q22, q23, q24, q25, q26, q27, q28;
-        byte q31, q32, q33, q34, q35, q36, q37, q38;
-        byte q41, q42, q43, q44, q45, q46, q47, q48;
-        byte q51, q52, q53, q54, q55, q56, q57, q58;
-        byte q61, q62, q63, q64, q65, q66, q67, q68;
-        byte q71, q72, q73, q74, q75, q76, q77, q78;
-    }
-
-    @State(Scope.Group)
-    public static class StateHierarchy extends StateHierarchy_4 {
-    }
-
-    @Benchmark
-    @Group("hierarchy")
-    public int reader(StateHierarchy s) {
-        return s.readOnly;
-    }
-
-    @Benchmark
-    @Group("hierarchy")
-    public void writer(StateHierarchy s) {
-        s.writeOnly++;
-    }
+//    public static class StateHierarchy_1 {
+//        int readOnly;
+//    }
+//
+//    public static class StateHierarchy_2 extends StateHierarchy_1 {
+//        byte p01, p02, p03, p04, p05, p06, p07, p08;
+//        byte p11, p12, p13, p14, p15, p16, p17, p18;
+//        byte p21, p22, p23, p24, p25, p26, p27, p28;
+//        byte p31, p32, p33, p34, p35, p36, p37, p38;
+//        byte p41, p42, p43, p44, p45, p46, p47, p48;
+//        byte p51, p52, p53, p54, p55, p56, p57, p58;
+//        byte p61, p62, p63, p64, p65, p66, p67, p68;
+//        byte p71, p72, p73, p74, p75, p76, p77, p78;
+//    }
+//
+//    public static class StateHierarchy_3 extends StateHierarchy_2 {
+//        int writeOnly;
+//    }
+//
+//    public static class StateHierarchy_4 extends StateHierarchy_3 {
+//        byte q01, q02, q03, q04, q05, q06, q07, q08;
+//        byte q11, q12, q13, q14, q15, q16, q17, q18;
+//        byte q21, q22, q23, q24, q25, q26, q27, q28;
+//        byte q31, q32, q33, q34, q35, q36, q37, q38;
+//        byte q41, q42, q43, q44, q45, q46, q47, q48;
+//        byte q51, q52, q53, q54, q55, q56, q57, q58;
+//        byte q61, q62, q63, q64, q65, q66, q67, q68;
+//        byte q71, q72, q73, q74, q75, q76, q77, q78;
+//    }
+//
+//    @State(Scope.Group)
+//    public static class StateHierarchy extends StateHierarchy_4 {
+//    }
+//
+//    @Benchmark
+//    @Group("hierarchy")
+//    public int reader(StateHierarchy s) {
+//        return s.readOnly;
+//    }
+//
+//    @Benchmark
+//    @Group("hierarchy")
+//    public void writer(StateHierarchy s) {
+//        s.writeOnly++;
+//    }
 
     /*
      * APPROACH 3: ARRAY TRICK
@@ -195,50 +195,56 @@ public class JMHSample_22_FalseSharing {
      * into the array at very sparse offsets.
      */
 
-    @State(Scope.Group)
+    @State(Scope.Thread)
     public static class StateArray {
         int[] arr = new int[128];
     }
 
-    @Benchmark
-    @Group("sparse")
-    public int reader(StateArray s) {
-        return s.arr[0];
-    }
+//    @Benchmark
+//    @Group("sparse")
+//    public int reader(StateArray s) {
+//        return s.arr[0];
+//    }
 
     @Benchmark
-    @Group("sparse")
-    public void writer(StateArray s) {
-        s.arr[64]++;
-    }
-
-    /*
-     * APPROACH 4:
-     *
-     * @Contended (since JDK 8):
-     *  Uncomment the annotation if building with JDK 8.
-     *  Remember to flip -XX:-RestrictContended to enable.
-     */
-
-    @State(Scope.Group)
-    public static class StateContended {
-        int readOnly;
-
-//        @sun.misc.Contended
-        int writeOnly;
+//    @Group("sparse")
+    public int writer1(StateArray s) {
+        return s.arr[64]++;
     }
 
     @Benchmark
-    @Group("contended")
-    public int reader(StateContended s) {
-        return s.readOnly;
+//    @Group("sparse")
+    public int writer2(StateArray s) {
+        return s.arr[0]++;
     }
-
-    @Benchmark
-    @Group("contended")
-    public void writer(StateContended s) {
-        s.writeOnly++;
-    }
+//
+//    /*
+//     * APPROACH 4:
+//     *
+//     * @Contended (since JDK 8):
+//     *  Uncomment the annotation if building with JDK 8.
+//     *  Remember to flip -XX:-RestrictContended to enable.
+//     */
+//
+//    @State(Scope.Group)
+//    public static class StateContended {
+//        int readOnly;
+//
+////        @sun.misc.Contended
+//        int writeOnly;
+//    }
+//
+//    @Benchmark
+//    @Group("contended")
+//    public int reader(StateContended s) {
+//        return s.readOnly;
+//    }
+//
+//    @Benchmark
+//    @Group("contended")
+//    public void writer(StateContended s) {
+//        s.writeOnly++;
+//    }
 
     /*
      * ============================== HOW TO RUN THIS TEST: ====================================
@@ -259,7 +265,8 @@ public class JMHSample_22_FalseSharing {
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(JMHSample_22_FalseSharing.class.getSimpleName())
-                .threads(Runtime.getRuntime().availableProcessors())
+//                .threads(Runtime.getRuntime().availableProcessors())
+            .threads(1)
                 .build();
 
         new Runner(opt).run();
